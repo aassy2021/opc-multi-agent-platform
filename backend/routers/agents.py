@@ -80,12 +80,12 @@ async def agent_chat(req: ChatRequest):
         if project:
             project = dict(project)
             from routers.projects import PHASE_FLOW, PHASE_LABELS
-            phase_info = PHASE_FLOW.get(project["phase"], {})
+            phase_info = PHASE_FLOW.get(project["phase"], {}) or {}
             project_context = (
                 f"\n\n---\n## 当前项目信息\n"
                 f"- 项目名称：{project['name']}\n"
                 f"- 项目描述：{project.get('description', '暂无')}\n"
-                f"- 当前阶段：{phase_info.get('label', project['phase'])}\n"
+                f"- 当前阶段：{phase_info.get('label', project['phase']) if phase_info else project['phase']}\n"
                 f"- 你的角色：{agent['name']}\n"
                 f"请始终围绕这个项目和当前阶段来回答问题。\n"
             )

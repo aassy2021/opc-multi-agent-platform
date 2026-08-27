@@ -109,22 +109,43 @@ export default function Settings() {
               <label className="block text-sm text-[var(--text-secondary)] mb-1">Provider</label>
               <select className="w-full px-4 py-2.5 bg-[var(--bg-dark)] border border-[var(--border-color)] rounded-lg text-white focus:outline-none" value={apiConfig.provider} onChange={e => {
                 const p = e.target.value
-                // 切换 provider 时自动填充对应的默认模型和 base_url
                 const defaults = {
                   xiaomi:  { model: 'mimo-v2.5',         base: 'https://api.xiaomimimo.com/v1' },
                   openai:  { model: 'gpt-4o',             base: 'https://api.openai.com/v1' },
                   deepseek:{ model: 'deepseek-chat',       base: 'https://api.deepseek.com/v1' },
-                  claude:  { model: 'claude-sonnet-4-20250514', base: '' },
-                  zhipu:   { model: 'glm-4',               base: 'https://open.bigmodel.cn/api/paas/v4' },
+                  claude:  { model: 'claude-sonnet-4-20250514', base: 'https://api.anthropic.com/v1' },
+                  zhipu:   { model: 'glm-4-plus',         base: 'https://open.bigmodel.cn/api/paas/v4' },
+                  qwen:    { model: 'qwen-max',            base: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+                  moonshot:{ model: 'moonshot-v1-128k',    base: 'https://api.moonshot.cn/v1' },
+                  doubao:  { model: 'doubao-1.5-pro-256k', base: 'https://ark.cn-beijing.volces.com/api/v3' },
+                  baichuan:{ model: 'Baichuan4',           base: 'https://api.baichuan-ai.com/v1' },
+                  minimax: { model: 'abab6.5-chat',        base: 'https://api.minimax.chat/v1' },
+                  ollama:  { model: 'qwen2.5:7b',          base: 'http://localhost:11434/v1' },
+                  custom:  { model: '',                     base: '' },
                 }
                 const d = defaults[p] || {}
                 setApiConfig({ ...apiConfig, provider: p, model: d.model || '', api_base: d.base || '' })
               }}>
-                <option value="xiaomi">小米 MiMo</option>
-                <option value="openai">OpenAI</option>
-                <option value="deepseek">DeepSeek</option>
-                <option value="claude">Claude (Anthropic)</option>
-                <option value="zhipu">智谱 (GLM)</option>
+                <optgroup label="🇨🇳 国产模型">
+                  <option value="xiaomi">小米 MiMo</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="qwen">通义千问 (阿里)</option>
+                  <option value="zhipu">智谱 GLM (清华)</option>
+                  <option value="moonshot">月之暗面 Kimi</option>
+                  <option value="doubao">豆包 (字节)</option>
+                  <option value="baichuan">百川</option>
+                  <option value="minimax">MiniMax</option>
+                </optgroup>
+                <optgroup label="🌍 国际模型">
+                  <option value="openai">OpenAI</option>
+                  <option value="claude">Claude (Anthropic)</option>
+                </optgroup>
+                <optgroup label="🖥️ 本地部署">
+                  <option value="ollama">Ollama (本地)</option>
+                </optgroup>
+                <optgroup label="⚙️ 其他">
+                  <option value="custom">自定义 (Custom)</option>
+                </optgroup>
               </select>
             </div>
             <div>

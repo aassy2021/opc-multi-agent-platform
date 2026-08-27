@@ -30,22 +30,57 @@ PROVIDERS = {
     "openai": {
         "base_url": "https://api.openai.com/v1",
         "api_key_env": "OPENAI_API_KEY",
-        "models": ["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"]
+        "models": ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "o4-mini", "gpt-3.5-turbo"]
     },
     "deepseek": {
         "base_url": "https://api.deepseek.com/v1",
         "api_key_env": "DEEPSEEK_API_KEY",
-        "models": ["deepseek-chat", "deepseek-coder"]
+        "models": ["deepseek-chat", "deepseek-reasoner", "deepseek-coder"]
     },
     "claude": {
         "base_url": "https://api.anthropic.com/v1",
         "api_key_env": "ANTHROPIC_API_KEY",
-        "models": ["claude-sonnet-4-20250514", "claude-haiku-4-20250414"]
+        "models": ["claude-sonnet-4-20250514", "claude-haiku-4-20250414", "claude-3-5-sonnet-20241022"]
     },
     "zhipu": {
         "base_url": "https://open.bigmodel.cn/api/paas/v4",
         "api_key_env": "ZHIPU_API_KEY",
-        "models": ["glm-4", "glm-4-flash"]
+        "models": ["glm-4-plus", "glm-4", "glm-4-flash", "glm-4-long", "glm-4v-plus"]
+    },
+    "qwen": {
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "api_key_env": "QWEN_API_KEY",
+        "models": ["qwen-max", "qwen-plus", "qwen-turbo", "qwen-long", "qwen-vl-max"]
+    },
+    "moonshot": {
+        "base_url": "https://api.moonshot.cn/v1",
+        "api_key_env": "MOONSHOT_API_KEY",
+        "models": ["moonshot-v1-128k", "moonshot-v1-32k", "moonshot-v1-8k"]
+    },
+    "doubao": {
+        "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+        "api_key_env": "DOUBAO_API_KEY",
+        "models": ["doubao-1.5-pro-256k", "doubao-1.5-lite-32k", "doubao-pro-256k"]
+    },
+    "baichuan": {
+        "base_url": "https://api.baichuan-ai.com/v1",
+        "api_key_env": "BAICHUAN_API_KEY",
+        "models": ["Baichuan4", "Baichuan3-Turbo", "Baichuan2-Turbo"]
+    },
+    "minimax": {
+        "base_url": "https://api.minimax.chat/v1",
+        "api_key_env": "MINIMAX_API_KEY",
+        "models": ["abab6.5-chat", "abab5.5-chat", "abab6.5s-chat"]
+    },
+    "ollama": {
+        "base_url": "http://localhost:11434/v1",
+        "api_key_env": "OLLAMA_API_KEY",
+        "models": ["qwen2.5:7b", "llama3.1:8b", "deepseek-r1:7b", "gemma2:9b", "mistral:7b"]
+    },
+    "custom": {
+        "base_url": "",
+        "api_key_env": "CUSTOM_API_KEY",
+        "models": []
     }
 }
 

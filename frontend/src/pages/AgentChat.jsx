@@ -793,19 +793,23 @@ export default function AgentChat() {
                   {reviewStatus.label}
                 </span>
                 <button onClick={() => setShowPhaseLogs(!showPhaseLogs)}
-                  className={`p-2 rounded-lg text-sm transition-all ${showPhaseLogs ? 'bg-white/10 text-white' : 'text-[var(--text-secondary)] hover:bg-white/5'}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                    showPhaseLogs ? 'bg-[var(--primary)]/20 text-[var(--primary-light)] border-[var(--primary)]/40' : 'text-[var(--text-secondary)] border-[var(--border-color)] hover:bg-white/5 hover:text-white'
+                  }`}
                   title="阶段日志">
-                  📑
+                  <span>📑</span><span>阶段日志</span>
                 </button>
                 <button onClick={() => setShowProjectPanel(!showProjectPanel)}
-                  className={`p-2 rounded-lg text-sm transition-all ${showProjectPanel ? 'bg-white/10 text-white' : 'text-[var(--text-secondary)] hover:bg-white/5'}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                    showProjectPanel ? 'bg-[var(--primary)]/20 text-[var(--primary-light)] border-[var(--primary)]/40' : 'text-[var(--text-secondary)] border-[var(--border-color)] hover:bg-white/5 hover:text-white'
+                  }`}
                   title="项目信息面板">
-                  📦
+                  <span>📦</span><span>项目信息</span>
                 </button>
                 <button onClick={handleClearHistory}
-                  className="p-2 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-red-500/10 hover:text-red-400 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--text-secondary)] border border-[var(--border-color)] hover:bg-red-500/15 hover:text-red-400 hover:border-red-500/30 transition-all"
                   title="清空当前Agent对话历史">
-                  🗑️
+                  <span>🗑️</span><span>清空</span>
                 </button>
               </>
             )}
@@ -966,7 +970,7 @@ export default function AgentChat() {
 
         {/* ──── 底部操作栏 ──── */}
         <div className="border-t border-[var(--border-color)] bg-[var(--bg-card)] flex-shrink-0">
-          {/* 工作流操作条 — 只在有项目且可流转时显示 */}
+          {/* ═══════ 工作流操作条 ═══════ */}
           {currentProject && canAdvance && (() => {
             const reviewStatus2 = projectDetail?.phase_review_status || 'none'
             const reviewerDecision = projectDetail?.reviewer_decision || 'none'
@@ -976,116 +980,86 @@ export default function AgentChat() {
             const isRejected = reviewStatus2 === 'rejected'
             const reviewerPending = isApproved && ['pass', 'conditional_pass'].includes(reviewerDecision)
             const reviewerApproved = ['user_approved', 'user_overridden'].includes(reviewerDecision)
-            // 运营阶段不需要审核专家，人工审核通过即可流转
             const allChecksPassed = phaseNeedsReview
               ? (isApproved && reviewerApproved)
               : isApproved
 
+            // 步骤样式：done=已完成，active=可操作，pending=待进行
+            const stepDone = (label) => (
+              <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold" style={{background:'linear-gradient(135deg,#00b894,#00cec9)',color:'#fff',boxShadow:'0 2px 8px rgba(0,184,148,0.35)'}}>
+                <span className="text-sm">✅</span><span>{label}</span>
+              </div>
+            )
+            const stepActive = (label, color, onClick) => (
+              <button onClick={onClick} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 hover:shadow-lg cursor-pointer" style={{background:`linear-gradient(135deg,${color},${color}dd)`,boxShadow:`0 3px 12px ${color}55`}}>
+                {label}
+              </button>
+            )
+            const stepPending = (label) => (
+              <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium" style={{background:'rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.45)',border:'1px solid rgba(255,255,255,0.1)'}}>
+                {label}
+              </div>
+            )
+            const stepArrow = <span style={{color:'rgba(255,255,255,0.3)',fontSize:14,fontWeight:700}}>›</span>
+
             return (
-              <div className="px-4 py-3 border-b border-[var(--border-color)]">
-                <div className="flex items-center gap-3 flex-wrap">
+              <div className="px-4 py-3.5 border-b border-[var(--border-color)]" style={{background:'linear-gradient(135deg,rgba(108,92,231,0.08),rgba(0,184,148,0.05))'}}>
+                <div className="flex items-center gap-2 flex-wrap">
                   {/* Step 1: 对话 */}
-                  <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs ${
-                    hasAssistant ? 'bg-green-500/10 text-green-400' : 'bg-white/10 text-white'
-                  }`}>
-                    <span>{hasAssistant ? '✅' : '1️⃣'}</span>
-                    <span>与Agent对话</span>
-                  </div>
-                  <span className="text-[var(--text-secondary)] text-xs">→</span>
+                  {hasAssistant ? stepDone('1. 与Agent对话') : stepPending('1. 💬 与Agent对话')}
+                  {stepArrow}
 
                   {/* Step 2: 提交方案 */}
-                  {isApproved ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-green-500/10 text-green-400">
-                      <span>✅</span><span>已提交</span>
-                    </div>
-                  ) : isRejected ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-red-500/10 text-red-400">
-                      <span>❌</span><span>被拒绝</span>
-                    </div>
-                  ) : (
-                    <button onClick={handleSubmitPlan} disabled={!hasAssistant}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                        hasAssistant ? 'bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer' : 'bg-white/5 text-[var(--text-secondary)] cursor-not-allowed opacity-50'
-                      }`}>
-                      <span>2️⃣</span><span>{isPending ? '⏳已提交' : '📝 提交方案审核'}</span>
-                    </button>
-                  )}
-                  <span className="text-[var(--text-secondary)] text-xs">→</span>
+                  {isApproved ? stepDone('2. 方案已提交')
+                    : isRejected ? <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold" style={{background:'linear-gradient(135deg,#e74c3c,#c0392b)',color:'#fff',boxShadow:'0 2px 8px rgba(231,76,60,0.35)'}}><span>❌</span><span>被拒绝</span></div>
+                    : stepActive(
+                        isPending ? '⏳ 2. 已提交' : '📝 2. 提交方案',
+                        hasAssistant ? '#f39c12' : '#555',
+                        hasAssistant ? handleSubmitPlan : undefined
+                      )
+                  }
+                  {stepArrow}
 
                   {/* Step 3: 人工审核 */}
-                  {isPending ? (
-                    <button onClick={() => setReviewModal({ open: true, log: phaseLogs.find(l => l.phase === currentProject?.phase) })}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500 text-white hover:bg-blue-600 transition-all cursor-pointer">
-                      <span>3️⃣</span><span>👤 通过/拒绝</span>
-                    </button>
-                  ) : isApproved ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-green-500/10 text-green-400">
-                      <span>✅</span><span>人工已通过</span>
-                    </div>
-                  ) : isRejected ? (
-                    <button onClick={() => { setShowPhaseLogs(true) }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-[var(--text-secondary)] hover:bg-white/20 transition-all">
-                      <span>3️⃣</span><span>查看拒绝意见</span>
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-white/5 text-[var(--text-secondary)] opacity-50">
-                      <span>3️⃣</span><span>人工审核</span>
-                    </div>
-                  )}
-                  <span className="text-[var(--text-secondary)] text-xs">→</span>
+                  {isPending ? stepActive('👤 3. 审核方案', '#3498db', () => setReviewModal({ open: true, log: phaseLogs.find(l => l.phase === currentProject?.phase) }))
+                    : isApproved ? stepDone('3. 人工已通过')
+                    : isRejected ? stepActive('📋 3. 查看意见', '#e67e22', () => setShowPhaseLogs(true))
+                    : stepPending('3. 👤 人工审核')
+                  }
+                  {stepArrow}
 
-                  {/* Step 4: 专家评审 — 仅需要审核的阶段显示 */}
+                  {/* Step 4: 专家评审 */}
                   {phaseNeedsReview ? (
                     <>
-                      {reviewerApproved ? (
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-green-500/10 text-green-400">
-                          <span>✅</span><span>专家已确认</span>
-                        </div>
-                      ) : reviewerPending ? (
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-yellow-500/10 text-yellow-400">
-                          <span>⏳</span><span>等待专家确认</span>
-                        </div>
-                      ) : isApproved ? (
-                        <button onClick={handleRequestReview} disabled={requestingReview}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#A29BFE] text-white hover:opacity-90 transition-all disabled:opacity-50">
-                          <span>4️⃣</span><span>{requestingReview ? '⏳ 评审中...' : '⚖️ 请求专家评审'}</span>
-                        </button>
-                      ) : (
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-white/5 text-[var(--text-secondary)] opacity-50">
-                          <span>4️⃣</span><span>专家评审</span>
-                        </div>
-                      )}
-                      <span className="text-[var(--text-secondary)] text-xs">→</span>
+                      {reviewerApproved ? stepDone('4. 专家已确认')
+                        : reviewerPending ? <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold" style={{background:'linear-gradient(135deg,#f39c12,#f1c40f)',color:'#fff',boxShadow:'0 2px 8px rgba(243,156,18,0.35)'}}><span>⏳</span><span>4. 等待确认</span></div>
+                        : isApproved ? stepActive('⚖️ 4. 请求评审', '#A29BFE', handleRequestReview)
+                        : stepPending('4. ⚖️ 专家评审')
+                      }
+                      {stepArrow}
                     </>
-                  ) : (
-                    <span className="text-[10px] text-[var(--text-secondary)] italic">（本阶段无需专家评审）→</span>
-                  )}
+                  ) : <span className="text-[11px] italic px-1" style={{color:'rgba(255,255,255,0.35)'}}>（无需评审）›</span>}
 
                   {/* Step 5: 流转 */}
-                  {allChecksPassed ? (
-                    <button onClick={handleAdvance} disabled={advancing || hasOpenBugs}
-                      className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-white ${
-                        !hasOpenBugs ? 'bg-green-600 hover:bg-green-700 cursor-pointer' : 'bg-white/10 text-[var(--text-secondary)] cursor-not-allowed'
-                      }`}>
-                      <span>{advancing ? '⏳' : hasOpenBugs ? '🚫' : '🚀'}</span>
-                      <span>{advancing ? '流转中...' : hasOpenBugs ? `${openBugs.length}个Bug未关闭` : `流转到${phaseDef.nextLabel}`}</span>
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs bg-white/5 text-[var(--text-secondary)] opacity-50">
-                      <span>🚀</span><span>流转</span>
-                    </div>
-                  )}
+                  {allChecksPassed
+                    ? stepActive(
+                        advancing ? '⏳ 流转中...' : hasOpenBugs ? `🚫 ${openBugs.length}个Bug未关` : `🚀 流转到${phaseDef.nextLabel}`,
+                        hasOpenBugs ? '#555' : '#00b894',
+                        (!advancing && !hasOpenBugs) ? handleAdvance : undefined
+                      )
+                    : stepPending('🚀 流转')
+                  }
                 </div>
                 {/* 当前步骤提示 */}
-                <div className="mt-2 flex items-center gap-2">
-                  {!hasAssistant && <p className="text-[10px] text-[var(--text-secondary)]">💡 现在可以和 Agent 对话，完成本阶段的任务。完成后点击「提交方案审核」</p>}
-                  {hasAssistant && !isPending && !isApproved && !isRejected && <p className="text-[10px] text-yellow-400">📝 对话完成后，点击「提交方案审核」将方案交给你审核</p>}
-                  {isPending && <p className="text-[10px] text-yellow-400">⏳ 方案已提交，请审核：满意点「通过」，不满意点「拒绝」并让 Agent 继续修改</p>}
-                  {isRejected && <p className="text-[10px] text-red-400">❌ 方案被拒绝，请继续与 Agent 对话修改，然后重新提交</p>}
-                  {isApproved && phaseNeedsReview && !reviewerApproved && !reviewerPending && <p className="text-[10px] text-green-400">✅ 人工已通过，请点击「请求专家评审」让俞望舒把关质量</p>}
-                  {isApproved && !phaseNeedsReview && !reviewerApproved && <p className="text-[10px] text-green-400">✅ 人工已通过！点击「流转到{phaseDef.nextLabel}」完成本阶段</p>}
-                  {reviewerPending && <p className="text-[10px] text-yellow-400">⏳ 专家评审中，请查看下方评审结论卡片进行操作</p>}
-                  {reviewerApproved && <p className="text-[10px] text-green-400">🎉 所有审核已通过！点击「流转到{phaseDef.nextLabel}」继续工作流</p>}
+                <div className="mt-2.5 flex items-center gap-2">
+                  {!hasAssistant && <p className="text-xs font-medium" style={{color:'var(--text-secondary)'}}>💡 现在和 Agent 对话完成本阶段任务，完成后点击「提交方案」</p>}
+                  {hasAssistant && !isPending && !isApproved && !isRejected && <p className="text-xs font-medium text-yellow-400">📝 对话完成，点击「提交方案」进入审核</p>}
+                  {isPending && <p className="text-xs font-medium text-blue-400">⏳ 方案已提交，点击「审核方案」进行通过或拒绝</p>}
+                  {isRejected && <p className="text-xs font-medium text-red-400">❌ 已拒绝，继续与 Agent 对话修改后重新提交</p>}
+                  {isApproved && phaseNeedsReview && !reviewerApproved && !reviewerPending && <p className="text-xs font-medium text-purple-400">💜 人工已通过，点击「请求评审」让俞望舒把关质量</p>}
+                  {isApproved && !phaseNeedsReview && !reviewerApproved && <p className="text-xs font-medium text-green-400">✅ 人工已通过！点击「流转」完成本阶段</p>}
+                  {reviewerPending && <p className="text-xs font-medium text-yellow-400">⏳ 专家评审中，查看评审结论卡片进行确认</p>}
+                  {reviewerApproved && <p className="text-xs font-medium text-green-400">🎉 全部通过！点击「流转到{phaseDef.nextLabel}」继续工作流</p>}
                 </div>
               </div>
             )
@@ -1184,7 +1158,12 @@ export default function AgentChat() {
             <div className="p-3 border-t border-[var(--border-color)] flex-shrink-0">
               <button onClick={handleSubmitPlan}
                 disabled={!messages.some(m => m.role === 'assistant')}
-                className="w-full px-4 py-2.5 rounded-xl text-sm font-medium bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                className="w-full px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                style={{
+                  background: messages.some(m => m.role === 'assistant') ? 'linear-gradient(135deg,#f39c12,#e67e22)' : 'rgba(255,255,255,0.05)',
+                  color: messages.some(m => m.role === 'assistant') ? '#fff' : 'var(--text-secondary)',
+                  boxShadow: messages.some(m => m.role === 'assistant') ? '0 3px 12px rgba(243,156,18,0.35)' : 'none'
+                }}>
                 📝 提交当前方案审核
               </button>
             </div>
@@ -1237,12 +1216,12 @@ export default function AgentChat() {
               </button>
             )}
             {canAdvance && projectDetail?.phase_review_status !== 'approved' && (
-              <div className="mt-4 px-4 py-2.5 rounded-lg text-sm text-center text-yellow-400 bg-yellow-500/10">
+              <div className="mt-4 px-4 py-2.5 rounded-lg text-sm text-center text-yellow-300 bg-yellow-500/20 border border-yellow-500/30">
                 ⏳ 请先提交方案并审核通过后流转
               </div>
             )}
             {canAdvance && projectDetail?.phase_review_status === 'approved' && phaseNeedsReview && !['user_approved', 'user_overridden'].includes(projectDetail?.reviewer_decision) && (
-              <div className="mt-4 px-4 py-2.5 rounded-lg text-sm text-center text-[#A29BFE] bg-[#A29BFE]/10">
+              <div className="mt-4 px-4 py-2.5 rounded-lg text-sm text-center text-[#A29BFE] bg-[#A29BFE]/20 border border-[#A29BFE]/30">
                 ⚖️ 请先请求审核专家评审并确认后流转
               </div>
             )}
