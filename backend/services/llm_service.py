@@ -89,7 +89,7 @@ class LLMService:
     def __init__(self, provider: str = None, model: str = None):
         self.provider = provider or os.getenv("LLM_PROVIDER", "xiaomi")
         self.model = model or os.getenv("LLM_MODEL", "mimo-v2.5")
-        self.base_url = os.getenv("LLM_BASE_URL", "")
+        self.base_url = os.getenv("LLM_API_BASE", "") or os.getenv("LLM_BASE_URL", "")
         self.config = PROVIDERS.get(self.provider, PROVIDERS["xiaomi"])
         # API key: 先查 provider 专属 env，再查通用 LLM_API_KEY
         self.api_key = os.getenv(self.config["api_key_env"], "") or os.getenv("LLM_API_KEY", "")

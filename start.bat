@@ -66,7 +66,7 @@ echo.
 
 :: 启动后端（后台）
 echo [启动] 后端服务 (端口 8000)...
-start "OPC-Backend" /min cmd /c "cd /d "%ROOT_DIR%backend" && python main.py"
+start "OPC-Backend" /min /d "%ROOT_DIR%backend" python main.py
 
 :: 等后端启动
 timeout /t 2 /nobreak >nul
